@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% block 'head' %}
+
+{% endblock 'head' %}
+
+
+{% block 'body' %}
+
+<div class="bg-white">
+    <div class="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block" aria-hidden="true"></div>
+    <div class="fixed right-0 top-0 hidden h-full w-1/2 bg-indigo-900 lg:block" aria-hidden="true"></div>
+  
+    <header class="relative mx-auto max-w-7xl bg-indigo-900 py-6 lg:grid lg:grid-cols-2 lg:gap-x-16 lg:bg-transparent lg:px-8 lg:pb-10 lg:pt-16">
+      <div class="mx-auto flex max-w-2xl px-4 lg:w-full lg:max-w-lg lg:px-0">
+        <a href="#">
+          <img src="{% static 'general/img/logo1.webp' %}" alt="" class="hidden h-12 rounded-md w-auto lg:block">
+        </a>
+      </div>
+    </header>
+  
+    <main class="relative mx-auto grid max-w-7xl grid-cols-1 gap-x-16 lg:grid-cols-2 lg:px-8">
+
+      <section aria-labelledby="summary-heading" class="bg-indigo-900 pb-12 pt-6 text-indigo-300 md:px-10 lg:col-start-2 lg:row-start-1 lg:mx-auto lg:w-full lg:max-w-lg lg:bg-transparent lg:px-0 lg:pb-24 lg:pt-0">
+        <div class="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
+  
+          <dl>
+            <dt class="text-sm font-medium">Saldo atual</dt>
+            <dd class="mt-1 text-3xl font-bold tracking-tight text-white">R$ {{request.user.balance}}</dd>
+          </dl>
+  
+          <ul role="list" class="divide-y divide-white/10 text-sm font-medium">
+            <li class="flex items-start space-x-4 py-6">
+              <img src="{% static 'general/img/logo1.webp' %}" class="size-20 flex-none rounded-md object-cover ring ring-slate-100/20 ring-1">
+              <div class="flex-auto space-y-1">
+                <h3 class="text-white">Adicionar saldo</h3>
+                <p>Otimize suas imagens via API</p>
+                <p>R$ 0,10 por imagem</p>
+              </div>
+              
+            </li>
+  
+          </ul>
+        </div>
+      </section>
+  
+      <section aria-labelledby="payment-and-shipping-heading" class="py-16 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:w-full lg:max-w-lg lg:pb-24 lg:pt-0">
+  
+        
+          <div class="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
+            <form action="{% url 'step1' %}" method="POST">{% csrf_token %}
+                <div>
+                    <h3 id="contact-info-heading" class="text-lg font-medium text-gray-900">Adicionar saldo</h3>
+                    
+                    <div class="mt-6">
+                        <label for="email-address" class="block text-sm font-medium text-gray-700">Valor</label>
+                        <div class="mt-1">
+                            <input type="text" id="money" placeholder="R$ 0,00" name="value" class="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                            <br>
+                            <label class="">Meio de pagamento</label>
+                            <select name="billing_type" class="block w-full bg-white rounded-md border-0 px-2 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                              <option value="PIX">Pix</option>
+                              <option value="CREDIT_CARD">Cartão de crédito</option>
+                            </select>
+                            
+                        </div>
+                    </div>
+                    </div>  
+        
+                    <div class="mt-2 flex justify-end pt-6">
+                    <button type="submit" class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50">Próximo</button>
+                    </div>
+                </div>
+            </form>
+    
+      </section>
+    </main>
+  </div>
+
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        const moneyInput = document.getElementById('money');
+        IMask(moneyInput, {
+        mask: 'R$ num',
+        blocks: {
+            num: {
+            mask: Number,
+            thousandsSeparator: '.',
+            radix: ',',
+            scale: 2
+            }
+        }
+        });
+    </script>
+{% endblock 'body' %}

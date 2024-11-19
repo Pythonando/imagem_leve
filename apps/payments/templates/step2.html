@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+{% block 'head' %}
+
+{% endblock 'head' %}
+
+
+{% block 'body' %}
+
+<div class="bg-white">
+
+    <div class="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block" aria-hidden="true"></div>
+    <div class="fixed right-0 top-0 hidden h-full w-1/2 bg-indigo-900 lg:block" aria-hidden="true"></div>
+  
+    <header class="relative mx-auto max-w-7xl bg-indigo-900 py-6 lg:grid lg:grid-cols-2 lg:gap-x-16 lg:bg-transparent lg:px-8 lg:pb-10 lg:pt-16">
+      <div class="mx-auto flex max-w-2xl px-4 lg:w-full lg:max-w-lg lg:px-0">
+        <a href="#">
+        
+          <img src="{% static 'general/img/logo1.webp' %}" alt="" class="hidden h-12 rounded-md w-auto lg:block">
+        </a>
+      </div>
+    </header>
+  
+    <main class="relative mx-auto grid max-w-7xl grid-cols-1 gap-x-16 lg:grid-cols-2 lg:px-8">
+      <h1 class="sr-only">Checkout</h1>
+  
+      <section aria-labelledby="summary-heading" class="bg-indigo-900 pb-12 pt-6 text-indigo-300 md:px-10 lg:col-start-2 lg:row-start-1 lg:mx-auto lg:w-full lg:max-w-lg lg:bg-transparent lg:px-0 lg:pb-24 lg:pt-0">
+        <div class="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
+  
+          <dl>
+            <dt class="text-sm font-medium">Saldo atual</dt>
+            <dd class="mt-1 text-3xl font-bold tracking-tight text-white">R$ {{request.user.balance}}</dd>
+          </dl>
+  
+          <ul role="list" class="divide-y divide-white/10 text-sm font-medium">
+            <li class="flex items-start space-x-4 py-6">
+              <img src="{% static 'general/img/logo1.webp' %}" class="size-20 flex-none rounded-md object-cover ring ring-slate-100/20 ring-1">
+              <div class="flex-auto space-y-1">
+                <h3 class="text-white">Adicionar saldo</h3>
+                <p>Otimize suas imagens via API</p>
+                <p>R$ 0,10 por imagem</p>
+                
+              </div>
+              <p class="flex-none text-base font-medium text-white">R$ {{invoice.value|floatformat:2}}</p>
+              
+            </li>
+            
+            <dl class="space-y-6 pt-6 text-sm font-medium">
+              <div class="flex items-center justify-between pt-2 text-white">
+                <dt class="text-base">Total a pagar</dt>
+                <dd class="text-base">R$ {{invoice.value|floatformat:2}}</dd>
+              </div>
+            </dl>
+          </ul>
+        </div>
+      </section>
+  
+      <section aria-labelledby="payment-and-shipping-heading" class="py-16 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:w-full lg:max-w-lg lg:pb-24 lg:pt-0">
+        {% if invoice.billingType == 'PIX' %}
+        <div class="mx-auto max-w-2xl border-t border-slate-800/10 px-4 lg:max-w-none lg:px-0 text-center">
+          <br>
+        
+            <p class="text-2xl font-medium">Efetue o pagamento via PIX</p>
+            <img src="data:image/png;base64,{{pix_data.encodedImage}}" class="w-1/2 mx-auto block" alt="QR Code para pagamento PIX">
+            <br>
+            <p class="text-2xl">PIX copia e cola</p>
+            <p class="bg-slate-200 overflow-auto ring-1 ring-slate-800/20 rounded-md mt-4 text-slate-600 p-2">
+              {{pix_data.payload}}
+            </p>
+      
+        </div>
+        {% else %}
+          <form action="{% url 'step2' invoice.id %}" method="POST">{% csrf_token %}
+            <div class="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
+              
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="ring-1 rounded-md text-sm p-2 {{ message.tags }}">
+                    {{message}}
+                  </div>
+                {% endfor %}
+              
+              {% endif %}
+
+              <div>
+                <h3 id="payment-heading" class="text-lg font-medium text-gray-900">Informações de pagamento</h3>
+                
+                <div class="mt-6 grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4">
+                  <div class="col-span-3 sm:col-span-4">
+                    <label for="card-number" class="block text-sm font-medium text-gray-700">{{form.holder_name.label}}</label>
+                    <div class="mt-1">
+                      {{form.holder_name}}
+                    </div>
+                  </div>
+                  
+                  <div class="col-span-3 sm:col-span-4">
+                    <label for="card-number" class="block text-sm font-medium text-gray-700">{{form.card_number.label}}</label>
+                    <div class="mt-1">
+                      {{form.card_number}}
+                    </div>
+                  </div>
+    
+                  <div class="col-span-2 sm:col-span-3">
+                    <label for="expiration-date" class="block text-sm font-medium text-gray-700">{{form.expiration_date.label}}</label>
+                    <div class="mt-1">
+                      {{form.expiration_date}}
+                    </div>
+                  </div>
+    
+                  <div>
+                    <label for="cvc" class="block text-sm font-medium text-gray-700">{{form.cvc.label}}</label>
+                    <div class="mt-1">
+                      {{form.cvc}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+              <div class="mt-10">
+                <h3 id="shipping-heading" class="text-lg font-medium text-gray-900">Informações residenciais</h3>
+    
+                <div class="mt-6 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-3">
+                  <div class="sm:col-span-3">
+                    <label for="address" class="block text-sm font-medium text-gray-700">{{form.postal_code.label}}</label>
+                    <div class="mt-1">
+                      {{form.postal_code}}
+                    </div>
+                  </div>
+    
+                  <div>
+                    <label for="city" class="block text-sm font-medium text-gray-700">{{form.house_number.label}}</label>
+                    <div class="mt-1">
+                      {{form.house_number}}
+                    </div>
+                  </div>
+    
+                  <div class="col-span-2">
+                    <label for="region" class="block text-sm font-medium text-gray-700">{{form.phone.label}}</label>
+                    <div class="mt-1">
+                      {{form.phone}}
+                    </div>
+                  </div>
+    
+                  
+                </div>
+              </div>
+
+              <div class="mt-10 flex justify-end border-t border-gray-200 pt-6">
+                <button type="submit" class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50">Finalizar compra</button>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"></script>
+  <script>
+  
+    $("[data-mask='card']").mask("9999 9999 9999 9999");
+    $("[data-mask='expiration']").mask("99/99");
+    $("[data-mask='cvc']").mask("999");
+    $("[data-mask='cep']").mask("99999-999");
+    $("[data-mask='phone']").mask("(99) 99999-9999");
+   
+  </script>
+ 
+{% endblock 'body' %}
