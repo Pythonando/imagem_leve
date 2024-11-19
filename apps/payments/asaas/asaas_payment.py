@@ -119,11 +119,15 @@ class AsaasInvoice(AsaasBasePayment):
         credit_card_holder_info: creditCardHolderInfo,
         credit_card_token=None,
     ):
+        
         payload = {
-            'creditCard': asdict(credit_card),
-            'creditCardHolderInfo': asdict(credit_card_holder_info),
             'creditCardToken': credit_card_token,
         }
+
+        if not credit_card_token:
+            payload['creditCard'] = asdict(credit_card)
+            payload['creditCardHolderInfo'] = asdict(credit_card_holder_info)
+
         return self._send_request(
             path=f'payments/{invoice_id}/payWithCreditCard',
             method='POST',

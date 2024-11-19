@@ -70,6 +70,42 @@
       
         </div>
         {% else %}
+          {% if credit_cards %}
+            <div>
+              <dl class="grid grid-cols-1 sm:grid-cols-2">
+                
+                <div class="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+                  <dt class="text-lg font-medium text-gray-900">Pague com seus cartões</dt>
+                  <dd class="mt-2 text-sm text-gray-900">
+                    <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200">
+                      {% for card in credit_cards %}
+                        <li class="flex items-center justify-between py-4 pl-4 pr-5 text-sm/6">
+                          <div class="flex w-0 flex-1 items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                            </svg>
+                            <div class="ml-4 flex min-w-0 flex-1 gap-2">
+                              <span class="truncate font-medium">{{card.last_numbers_credit_card}}</span>
+                              <span class="shrink-0 text-gray-400">{{card.credit_card_brand}}</span>
+                            </div>
+                          </div>
+                          <div class="ml-4 shrink-0">
+                            <form action="{% url 'step2' invoice.id %}" method="POST">{% csrf_token %}
+                              <input type="hidden" name="credit_card_token" value="{{card.credit_card_token}}">
+                              <button class="font-medium text-indigo-600 hover:text-indigo-500">Pagar</button>
+                            </form>
+                            
+                          </div>
+                        </li>
+                      {% endfor %}  
+                    
+                    </ul>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          {% endif %}
+
           <form action="{% url 'step2' invoice.id %}" method="POST">{% csrf_token %}
             <div class="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
               
@@ -83,8 +119,11 @@
               {% endif %}
 
               <div>
-                <h3 id="payment-heading" class="text-lg font-medium text-gray-900">Informações de pagamento</h3>
-                
+                {% if not credit_cards %}
+                  <h3 id="payment-heading" class="text-lg font-medium text-gray-900">Informações de pagamento</h3>
+                {% else %}
+                  <h3 id="payment-heading" class="text-lg font-medium text-gray-900">Ou pague com um novo cartão</h3>
+                {% endif %}
                 <div class="mt-6 grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4">
                   <div class="col-span-3 sm:col-span-4">
                     <label for="card-number" class="block text-sm font-medium text-gray-700">{{form.holder_name.label}}</label>
