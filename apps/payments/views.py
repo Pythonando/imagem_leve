@@ -6,11 +6,20 @@ from payments.asaas.payments_dataclasses import Billing, CreditCard, creditCardH
 from payments.asaas.payment_enum import BillingType
 from datetime import date, timedelta
 from django.http import HttpResponse, Http404
-from .models import CreditCards
+from .models import CreditCards, ProcessedWebhook
 from .forms import CheckoutCreditCard
 from django.contrib import messages
 from django.contrib.messages import constants
+import json
+from accounts.models import User
+from decimal import Decimal
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.db import transaction
 
+@method_decorator([login_required], 'dispatch')
 class Step1(View):
     template_name = 'step1.html'
 
@@ -23,11 +32,17 @@ class Step1(View):
 
         asaas = AsaasInvoice()
         due_date = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
-        billing = Billing(request.user.customer_id, billing_type, value, due_date)
+        billing = Billing(
+            customer=request.user.customer_id,
+            billingType=billing_type,
+            value=value,
+            dueDate=due_date,
+            externalReference="IMAGEM_LEVE_ADD_SALDO")
         response = asaas.create_invoice(billing)
 
         return redirect(reverse('step2', kwargs={'invoice_id': response['id']}))
-    
+
+@method_decorator([login_required], 'dispatch')
 class Step2(View):
     template_name = 'step2.html'
     def get(self, request, invoice_id):
@@ -112,3 +127,35 @@ class Step2(View):
             return redirect(reverse('step2', kwargs={'invoice_id': invoice_id}))
         
         return redirect(reverse('home'))
+    
+
+@method_decorator([csrf_exempt], 'dispatch')  
+class Webhook(View):
+    def post(self, request):
+        payload = json.loads(request.body)
+        event = payload.get('event')
+
+        external_reference = payload.get('payment', {}).get('externalReference')
+        customer_id = payload.get('payment', {}).get('customer')
+        value = payload.get('payment', {}).get('value')
+        invoice_id = payload.get('payment', {}).get('id')
+
+        if ProcessedWebhook.objects.filter(Q(event_id=payload.get('id')) | (Q(invoice_id=invoice_id) & Q(event__in=['PAYMENT_RECEIVED','PAYMENT_CONFIRMED'])) ).exists():
+            return HttpResponse(status=200)
+        
+        with transaction.atomic(): 
+            ProcessedWebhook.objects.create(
+                event_id=payload.get('id'),
+                invoice_id= invoice_id,
+                event=event,
+                payload=payload
+            )
+
+            if event in ('PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'):
+                
+                if external_reference == 'IMAGEM_LEVE_ADD_SALDO':
+                    user = User.objects.get(customer_id=customer_id)
+                    user.balance += Decimal(value)
+                    user.save()
+
+        return HttpResponse(status=200)

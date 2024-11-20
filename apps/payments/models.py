@@ -10,3 +10,10 @@ class CreditCards(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} - {self.last_numbers_credit_card}"
+    
+class ProcessedWebhook(models.Model):
+    event_id = models.CharField(max_length=255, unique=True)
+    invoice_id = models.CharField(max_length=255, unique=True)
+    event = models.CharField(max_length=50)
+    payload = models.JSONField()
+    processed_at = models.DateTimeField(auto_now_add=True)
