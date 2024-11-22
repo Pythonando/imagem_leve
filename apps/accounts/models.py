@@ -13,8 +13,12 @@ class User(AbstractUser):
     cpf_cnpj = models.CharField(
         max_length=50, null=True, blank=True, validators=[validate_cpf_cnpj]
     )
-    balance = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
-    
+    balance = models.DecimalField(
+        default=0.00, max_digits=10, decimal_places=2
+    )
+
+    webhook = models.URLField(null=True, blank=True)
+
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -29,7 +29,6 @@ class UserAdmin(admin_auth_django.UserAdmin):
                 ),
             },
         ),
-        
         (
             'Geral',
             {

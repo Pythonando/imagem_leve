@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from PIL import ImageFile, Image
 from pathlib import Path
-from exceptions import NotImage
+from .exceptions import NotImage
 from io import BytesIO
 from typing import Any, List
 
@@ -50,10 +50,11 @@ class ImageOptimizer:
         return 1 if (100 - self.compression) == 0 else (100 - self.compression)
 
 
-from pathlib import Path
+'''from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 x = ImageOptimizer(BASE_DIR / 'img1.png', 80, WebpPILOptimizer())
 print(x.optimize())
+'''

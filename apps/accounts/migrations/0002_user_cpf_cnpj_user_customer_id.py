@@ -14,7 +14,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='cpf_cnpj',
-            field=models.CharField(blank=True, max_length=50, null=True, validators=[accounts.model_validators.validate_cpf_cnpj]),
+            field=models.CharField(
+                blank=True,
+                max_length=50,
+                null=True,
+                validators=[accounts.model_validators.validate_cpf_cnpj],
+            ),
         ),
         migrations.AddField(
             model_name='user',

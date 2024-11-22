@@ -9,8 +9,9 @@ class CreditCards(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f"{self.user} - {self.last_numbers_credit_card}"
-    
+        return f'{self.user} - {self.last_numbers_credit_card}'
+
+
 class ProcessedWebhook(models.Model):
     event_id = models.CharField(max_length=255, unique=True)
     invoice_id = models.CharField(max_length=255, unique=True)

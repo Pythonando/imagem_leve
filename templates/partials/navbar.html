@@ -6,8 +6,8 @@
         <img class="h-10 w-auto rounded-lg" src="{% static 'general/img/logo1.webp' %}" alt="Your Company">
       </div>
       <nav class=" md:flex md:gap-x-11 md:text-sm/6 md:font-semibold md:text-gray-700">
-        <a href="#">Perfil</a>
-        <a href="#">Pagamentos</a>
+        <a href="{% url 'perfil' %}">Perfil</a>
+        <a href="{% url 'step1' %}">Pagamentos</a>
       </nav>
       <div class="flex flex-1 items-center justify-end gap-x-8">
         

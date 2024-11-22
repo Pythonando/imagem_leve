@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'payments',
     'accounts',
+    'optimizer',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -150,5 +152,21 @@ AUTHENTICATION_BACKENDS = ('accounts.backends.CustomBackend',)
 
 MESSAGE_TAGS = {
     constants.ERROR: 'bg-red-50 text-red-800 ring-red-800/40',
-    constants.SUCCESS: 'bg-green-50 text-green-800 ring-green-800/40'
+    constants.SUCCESS: 'bg-green-50 text-green-800 ring-green-800/40',
 }
+
+# Cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': config('REDIS_URL')
+    }
+}
+
+# Celery
+
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'

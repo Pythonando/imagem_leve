@@ -10,7 +10,7 @@ from datetime import date, timedelta
 class AsaasBasePayment:
     def __init__(self):
         self._BASE_URL = 'https://sandbox.asaas.com/api/v3/'
-        self._API_KEY = '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNzc4Mjk6OiRhYWNoXzdhMDIwOTAxLTFmYjgtNDYwYi1hYmE3LTZkYzE0ZWVkOTlkNg=='
+        self._API_KEY = '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNzc4Mjk6OiRhYWNoXzRiZDUzYTkzLTA0Y2ItNDRhNC1hOTVjLWJjMTRkZTgyNGRlMg=='
 
         """self._API_KEY = settings.API_KEY_ASAAS
         
@@ -109,6 +109,11 @@ class AsaasInvoice(AsaasBasePayment):
             path='payments', method='POST', body=asdict(billing)
         ).json()
 
+    def list_invoices(self, customer_id):
+        return self._send_request(
+            path=f'payments?customer={customer_id}'
+        ).json()
+
     def get_invoice(self, invoice_id):
         return self._send_request(path=f'payments/{invoice_id}').json()
 
@@ -119,7 +124,7 @@ class AsaasInvoice(AsaasBasePayment):
         credit_card_holder_info: creditCardHolderInfo,
         credit_card_token=None,
     ):
-        
+
         payload = {
             'creditCardToken': credit_card_token,
         }
@@ -174,6 +179,6 @@ asaas = AsaasInvoice()
         '00000000000',
     ),
 )"""
-#response = asaas.get_pix_invoice('pay_wnlwhmcy0279z3q7')
+# response = asaas.get_pix_invoice('pay_wnlwhmcy0279z3q7')
 
-#print(response)
+# print(response)
